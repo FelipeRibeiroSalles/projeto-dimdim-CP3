@@ -1,0 +1,44 @@
+services:
+
+  db-risa-cp3:
+    image: postgres:15
+    container_name: db-risa-cp3
+
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: dimdimdb
+
+    volumes:
+      - risa-volume:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+
+    networks:
+      - risa-network
+
+  app-risa-cp3:
+    build: ./app
+
+    container_name: app-risa-cp3
+
+    ports:
+      - "3000:3000"
+
+    environment:
+      DB_USER: admin
+      DB_PASSWORD: admin
+      DB_HOST: db-risa-cp3
+      DB_PORT: 5432
+      DB_NAME: dimdimdb
+
+    depends_on:
+      - db-risa-cp3
+
+    networks:
+      - risa-network
+
+networks:
+  risa-network:
+
+volumes:
+  risa-volume:
